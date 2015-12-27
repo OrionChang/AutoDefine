@@ -76,7 +76,11 @@ def get_definition(editor):
                     else:
                         midURL = rawWav[:1]
                     wavURL = "http://media.merriam-webster.com/soundc11/" + midURL + "/" + rawWav
-                    allSounds.append(editor.urlToFile(wavURL).strip())
+
+                    soundFile = editor.urlToFile(wavURL)
+                    # Prevent file from being NoneType
+                    if soundFile is not None:
+                        allSounds.append(soundFile.strip())
 
         # we want to make this a non-duplicate set, so that we only get unique sound files.
         allSounds = OrderedSet(allSounds)
