@@ -81,7 +81,7 @@ def get_definition(editor):
         # we want to make this a non-duplicate set, so that we only get unique sound files.
         allSounds = OrderedSet(allSounds)
         for soundLocalFilename in reversed(allSounds):
-            allFields[0] += '[sound:' + soundLocalFilename + ']'
+            allFields[INSERT_PRONUNCIATIONS_POSITION - 1] += '[sound:' + soundLocalFilename + ']'
 
     # Extract the type of word this is
     for entry in allEntries:
@@ -159,7 +159,7 @@ def get_definition(editor):
     toReturn = toReturn.replace(".</b> ; ", ".</b> ") #<sx> as first definition after "n. " or "v. "
     toReturn = toReturn.replace("\n; ", "\n") #<sx> as first definition after newline
 
-    allFields[1] = toReturn
+    allFields[INSERT_DEFINITIONS_POSITION - 1] = toReturn
     editor.web.eval("setFields(%s, %d);" % (allFields, 0))
 
     # not sure exactly how saving works, but focusing different fields seems to help.
