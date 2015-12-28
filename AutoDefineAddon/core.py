@@ -122,42 +122,113 @@ def get_definition(editor):
     for definition in definitionArray:
         lastFunctionalLabel = ""
         toPrint = ""
-        for dtTag in definition.findall("dt"):
+        tail = definition.tail
+        definition.tail = ""
 
+        for dtTag in definition.findall("dt"):
             if dtTag.tail == "obsolete":
                 dtTag.tail = "" #take away the tail word so that when printing it does not show up.
                 if IGNORE_ARCHAIC:
                     continue
 
 
-            # We don't really care for 'verbal illustrations' or 'usage notes', even though they are occasionally useful.
-            for usageNote in dtTag.findall("un"):
-                dtTag.remove(usageNote)
-            for verbalIllustration in dtTag.findall("vi"):
-                dtTag.remove(verbalIllustration)
+            # # We don't really care for 'verbal illustrations' or 'usage notes', even though they are occasionally useful.
+            # for usageNote in dtTag.findall("un"):
+            #     dtTag.remove(usageNote)
+            # for verbalIllustration in dtTag.findall("vi"):
+            #     dtTag.remove(verbalIllustration)
 
-            # Directional cross reference doesn't make sense for us
-            for dxTag in dtTag.findall("dx"):
-                for dxtTag in dxTag.findall("dxt"):
-                    for dxnTag in dxtTag.findall("dxn"):
-                        dxtTag.remove(dxnTag)
+            # # Directional cross reference doesn't make sense for us
+            # for dxTag in dtTag.findall("dx"):
+            #     for dxtTag in dxTag.findall("dxt"):
+            #         for dxnTag in dxtTag.findall("dxn"):
+            #             dxtTag.remove(dxnTag)
 
-            toPrint = ET.tostring(dtTag, "", "xml").strip() # extract raw XML from <dt>...</dt>
-            toPrint = toPrint.replace("<sx>", "; ") # attempt to remove 'synonymous cross reference tag' and replace with semicolon
-            toPrint = toPrint.replace("<dx>", "; ") # attempt to remove 'Directional cross reference tag' and replace with semicolon
-            toPrint = re.sub('<[^>]*>', '', toPrint) # remove all other XML tags
-            toPrint = re.sub(':', '', toPrint) # remove all colons, since they are usually useless and have been replaced with semicolons above
-            toPrint = toPrint.replace(" ; ", "; ").strip() # erase space between semicolon and previous word, if exists, and strip any extraneous whitespace
-            toPrint += "<br>\n"
+            # toPrint = ET.tostring(dtTag, "", "xml").strip() # extract raw XML from <dt>...</dt>
+            # toPrint = toPrint.replace("<sx>", "<span class='sx'>") # attempt to remove 'synonymous cross reference tag' and replace with semicolon
+            # toPrint = toPrint.replace("</sx>", "</span>")
+            # toPrint = toPrint.replace("<fw>", "<span class='fw'>")
+            # toPrint = toPrint.replace("</fw>", "</span>")
+            # toPrint = toPrint.replace("<dx>", "; ") # attempt to remove 'Directional cross reference tag' and replace with semicolon
+            #
+            # toPrint = re.sub('<[^>]*>', '', toPrint) # remove all other XML tags
+            # toPrint = re.sub(':', '', toPrint) # remove all colons, since they are usually useless and have been replaced with semicolons above
+            # toPrint = toPrint.replace(" ; ", "; ").strip() # erase space between semicolon and previous word, if exists, and strip any extraneous whitespace
 
-            # add verb/noun/adjective
-            if (lastFunctionalLabel != definition.tail):
-                toPrint = definition.tail + " " + toPrint
-                # but don't add an extra carriage return for the first definition
-                #if (definition != definitionArray[0]):
-                #    toPrint = "<br>\n" + toPrint
-            lastFunctionalLabel = definition.tail
-            toReturn += toPrint
+            #
+
+            # toReturn += toPrint
+
+        for dateText in definition.findall("date"):
+            definition.remove(dateText)
+
+        toPrint = ET.tostring(definition, "", "xml").strip()
+
+        toPrint = toPrint.replace("> <", "><") #remove space
+        toPrint = toPrint.replace("\n", "") #remove space
+
+        toPrint = toPrint.replace("<def>", "<div class='def'>")
+        toPrint = toPrint.replace("</def>", "</div>")
+
+        # toPrint = toPrint.replace("<date>", "<span class='date'>") # date is removed
+        # toPrint = toPrint.replace("</date>", "</span>")
+
+        toPrint = toPrint.replace("<dt>", "<span class='dt'>") # part of a series of definition
+        toPrint = toPrint.replace("</dt><sn>", "</dt>\n<br><sn>") # return after a part
+        toPrint = toPrint.replace("</dt>", "</span>")
+
+        toPrint = toPrint.replace("<sx>", "<span class='sx'>") # synonym
+        toPrint = toPrint.replace("</sx>", "</span>")
+
+        toPrint = toPrint.replace("<fw>", "<span class='fw'>") #inline related words
+        toPrint = toPrint.replace("</fw>", "</span>")
+
+        toPrint = toPrint.replace("<sd>", "<span class='sd'><i>") # 'especially'
+        toPrint = toPrint.replace("</sd>", "</i></span>")
+
+        toPrint = toPrint.replace("<ssl>", "<span class='ssl'><i>") # 'obsolete'
+        toPrint = toPrint.replace("</ssl>", "</i></span>")
+        toPrint = toPrint.replace("<sl>", "<span class='ssl'><i>") # sometimes 'obsolete'
+        toPrint = toPrint.replace("</sl>", "</i></span>")
+
+        toPrint = toPrint.replace("<vi>", "<span class='vi'>&lt;") # '<******>'
+        toPrint = toPrint.replace("</vi>", "&gt;</span>")
+
+        toPrint = toPrint.replace("<it>", "<span class='it'><i>") # '<***special***>'
+        toPrint = toPrint.replace("</it>", "</i></span>")
+
+        toPrint = toPrint.replace("<dx>", "<span class='dx'>[") # 'compare ****'
+        toPrint = toPrint.replace("</dx>", "]</span>")
+
+        toPrint = toPrint.replace("<dxt>", "<span class='dxt'>") # 'compare ****'
+        toPrint = toPrint.replace("</dxt>", "</span>")
+
+        toPrint = toPrint.replace("<dxn>", "<span class='dxn'>") # 'compare ****'
+        toPrint = toPrint.replace("</dxn>", "</span>")
+
+        # toPrint = toPrint.replace("</span> <sn>", "</span><br>\n<sn>") #sometimes there is a space
+        # toPrint = toPrint.replace("</span><sn>", "</span><br>\n<sn>") #add br before it except the first one in a def
+        toPrint = toPrint.replace("<sn>", "<span class='sn'>") # number of sequence of a series of definition
+        toPrint = toPrint.replace("</sn>", "</span>")
+
+        toPrint = toPrint.replace("</span><vt>", "</span><br>\n<vt>") #add br before it except the first one in a def
+        toPrint = toPrint.replace("<vt>", "<span class='vt'>[<i>") # 'intransive verb'
+        toPrint = toPrint.replace("</vt>", "</i>]</span> ")
+
+        toPrint = toPrint.replace("<ss>", " <span class='ss'>") # synonyms
+        toPrint = toPrint.replace("</ss>", "</span>")
+
+
+        # add verb/noun/adjective
+        if (lastFunctionalLabel != tail):
+            toPrint = tail + " " + toPrint
+            # but don't add an extra carriage return for the first definition
+            #if (definition != definitionArray[0]):
+            #    toPrint = "<br>\n" + toPrint
+        lastFunctionalLabel = tail
+
+        toPrint += "<br>\n"
+        toReturn += toPrint
 
     # final cleanup of <sx> tag bs
     toReturn = toReturn.replace(".</b> ; ", ".</b> ") #<sx> as first definition after "n. " or "v. "

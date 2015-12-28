@@ -23,3 +23,39 @@ core.IGNORE_ARCHAIC = True
 
 # Open a browser tab with an image search for the same word?
 core.OPEN_IMAGES_IN_BROWSER = False
+
+# ---------------------------- suggested css --------------------------------
+
+# .sn{
+#  margin-left: 0.5em;
+#  margin-right: 0.5em;
+#  font-weight: bold;
+# }
+#
+# .sx, .ss, .vi, .dx, .sd, .ssl{
+#  margin-left: 0.2em;
+#  margin-right: 0.2em;
+# }
+#
+# .sx, .ss{
+#  color: #ae0015;
+#  text-transform: uppercase;
+# }
+#
+# .vt{
+#  color: #5690b1;
+#  font-size: 0.8em;
+# }
+#
+# .vi{
+#  color: #009900;
+# }
+#
+# .dx{
+#  color: #cccccc;
+#  font-size: 0.8em;
+# }
+#
+# .sd, .ssl{
+#  color: #cccccc;
+# }
